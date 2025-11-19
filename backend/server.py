@@ -362,6 +362,12 @@ async def get_sales_report(start_date: str, end_date: str, current_user: User = 
     try:
         start = datetime.fromisoformat(start_date)
         end = datetime.fromisoformat(end_date).replace(hour=23, minute=59, second=59)
+        
+        # Ensure timezone consistency
+        if start.tzinfo is None:
+            start = start.replace(tzinfo=timezone.utc)
+        if end.tzinfo is None:
+            end = end.replace(tzinfo=timezone.utc)
     except:
         raise HTTPException(status_code=400, detail="Invalid date format. Use ISO format")
     
@@ -371,6 +377,11 @@ async def get_sales_report(start_date: str, end_date: str, current_user: User = 
     filtered_sales = []
     for sale in sales:
         sale_date = datetime.fromisoformat(sale['created_at']) if isinstance(sale['created_at'], str) else sale['created_at']
+        
+        # Ensure timezone consistency for comparison
+        if sale_date.tzinfo is None:
+            sale_date = sale_date.replace(tzinfo=timezone.utc)
+            
         if start <= sale_date <= end:
             sale['created_at'] = sale_date
             filtered_sales.append(sale)
