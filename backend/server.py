@@ -458,6 +458,108 @@ async def get_dashboard_stats(current_user: User = Depends(get_current_user)):
         "total_products": len(products)
     }
 
+@api_router.get("/reports/export-excel")
+async def export_sales_to_excel(start_date: str, end_date: str, current_user: User = Depends(get_current_user)):
+    try:
+        start = datetime.fromisoformat(start_date)
+        end = datetime.fromisoformat(end_date).replace(hour=23, minute=59, second=59)
+        
+        # Ensure timezone consistency
+        if start.tzinfo is None:
+            start = start.replace(tzinfo=timezone.utc)
+        if end.tzinfo is None:
+            end = end.replace(tzinfo=timezone.utc)
+    except:
+        raise HTTPException(status_code=400, detail="Invalid date format. Use ISO format")
+    
+    # Get sales in range
+    all_sales = await db.sales.find({}, {"_id": 0}).to_list(10000)
+    
+    filtered_sales = []
+    for sale in all_sales:
+        sale_date = datetime.fromisoformat(sale['created_at']) if isinstance(sale['created_at'], str) else sale['created_at']
+        
+        # Ensure timezone consistency for comparison
+        if sale_date.tzinfo is None:
+            sale_date = sale_date.replace(tzinfo=timezone.utc)
+            
+        if start <= sale_date <= end:
+            sale['created_at'] = sale_date
+            filtered_sales.append(sale)
+    
+    # Create Excel file
+    output = BytesIO()
+    
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        # Sheet 1: Summary
+        summary_data = {
+            'Métrica': ['Total Ventas', 'Ingresos Totales', 'Ahorros Totales'],
+            'Valor': [
+                len(filtered_sales),
+                sum(s['total_amount'] for s in filtered_sales),
+                sum(s['total_savings'] for s in filtered_sales)
+            ]
+        }
+        df_summary = pd.DataFrame(summary_data)
+        df_summary.to_excel(writer, sheet_name='Resumen', index=False)
+        
+        # Sheet 2: Sales Details
+        sales_rows = []
+        for sale in filtered_sales:
+            for item in sale['items']:
+                sales_rows.append({
+                    'Fecha': sale['created_at'].strftime('%Y-%m-%d %H:%M:%S'),
+                    'ID Venta': sale['id'],
+                    'Vendedor': sale['seller_name'],
+                    'Producto': item['product_name'],
+                    'Cantidad': item['quantity'],
+                    'Precio Unitario': item['unit_price'],
+                    'Total': item['total_price'],
+                    'Precio Regular': item['regular_price'],
+                    'Ahorro': item['savings'],
+                    'Promoción Aplicada': 'Sí' if item['promotion_applied'] else 'No'
+                })
+        
+        if sales_rows:
+            df_sales = pd.DataFrame(sales_rows)
+            df_sales.to_excel(writer, sheet_name='Ventas Detalladas', index=False)
+        
+        # Sheet 3: Products Summary
+        products_sold = {}
+        for sale in filtered_sales:
+            for item in sale['items']:
+                if item['product_name'] not in products_sold:
+                    products_sold[item['product_name']] = {
+                        'Producto': item['product_name'],
+                        'Cantidad Total': 0,
+                        'Ingresos': 0,
+                        'Ventas con Promoción': 0,
+                        'Ventas Regulares': 0,
+                        'Ahorro Total': 0
+                    }
+                products_sold[item['product_name']]['Cantidad Total'] += item['quantity']
+                products_sold[item['product_name']]['Ingresos'] += item['total_price']
+                products_sold[item['product_name']]['Ahorro Total'] += item['savings']
+                if item['promotion_applied']:
+                    products_sold[item['product_name']]['Ventas con Promoción'] += 1
+                else:
+                    products_sold[item['product_name']]['Ventas Regulares'] += 1
+        
+        if products_sold:
+            df_products = pd.DataFrame(list(products_sold.values()))
+            df_products = df_products.sort_values('Cantidad Total', ascending=False)
+            df_products.to_excel(writer, sheet_name='Productos', index=False)
+    
+    output.seek(0)
+    
+    filename = f"reporte_ventas_{start.strftime('%Y%m%d')}_{end.strftime('%Y%m%d')}.xlsx"
+    
+    return StreamingResponse(
+        output,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
 @api_router.get("/")
 async def root():
     return {"message": "POS API is running"}
