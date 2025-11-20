@@ -114,6 +114,19 @@ export default function Reports() {
             <Button onClick={fetchReport} disabled={loading} className="btn-primary" data-testid="generate-report-button">
               {loading ? 'Generando...' : 'Generar Reporte'}
             </Button>
+
+            {report && (
+              <Button
+                onClick={exportToExcel}
+                disabled={exporting}
+                variant="outline"
+                className="border-green-500 text-green-700 hover:bg-green-50"
+                data-testid="export-excel-button"
+              >
+                <FileDown className="w-4 h-4 mr-2" />
+                {exporting ? 'Exportando...' : 'Exportar a Excel'}
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>
