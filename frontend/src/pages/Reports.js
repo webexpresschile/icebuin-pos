@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, TrendingUp, Package, DollarSign, Tag } from 'lucide-react';
+import { CalendarIcon, TrendingUp, Package, DollarSign, Tag, FileDown } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { toast } from 'sonner';
@@ -16,6 +16,7 @@ export default function Reports() {
   const [endDate, setEndDate] = useState(new Date());
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   const fetchReport = async () => {
     setLoading(true);
@@ -31,6 +32,35 @@ export default function Reports() {
       toast.error('Error al generar reporte');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const exportToExcel = async () => {
+    setExporting(true);
+    try {
+      const response = await axios.get(`${API}/reports/export-excel`, {
+        params: {
+          start_date: startDate.toISOString(),
+          end_date: endDate.toISOString()
+        },
+        responseType: 'blob'
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      const filename = `reporte_ventas_${format(startDate, 'yyyyMMdd')}_${format(endDate, 'yyyyMMdd')}.xlsx`;
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      toast.success('Reporte exportado exitosamente');
+    } catch (error) {
+      toast.error('Error al exportar reporte');
+    } finally {
+      setExporting(false);
     }
   };
 
