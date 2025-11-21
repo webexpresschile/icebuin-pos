@@ -12,68 +12,35 @@ export default function BarcodeScanner({ onScan, onClose }) {
   const codeReaderRef = useRef(null);
   const streamRef = useRef(null);
 
-  const checkCameraPermissions = async () => {
-    try {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        throw new Error('Tu navegador no soporta acceso a la cámara');
-      }
-      return true;
-    } catch (err) {
-      return false;
-    }
-  };
-
-  const requestCameraAccess = async () => {
-    try {
-      // Request camera access with specific constraints for mobile
-      const constraints = {
-        video: {
-          facingMode: { ideal: 'environment' }, // Back camera on mobile
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
-        }
-      };
-
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      
-      // Stop the stream immediately (we just wanted permission)
-      stream.getTracks().forEach(track => track.stop());
-      
-      return true;
-    } catch (err) {
-      console.error('Camera access error:', err);
-      return false;
-    }
-  };
-
   const startScanning = async () => {
     try {
       setIsScanning(false);
       setError(null);
 
-      // Check if camera is supported
-      const supported = await checkCameraPermissions();
-      if (!supported) {
+      // Check if browser supports camera
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         setError('Tu navegador no soporta acceso a la cámara. Prueba con Chrome o Safari.');
         return;
       }
 
-      // Request camera access first
-      const hasAccess = await requestCameraAccess();
-      if (!hasAccess) {
-        setError('No se pudo acceder a la cámara. Verifica los permisos en la configuración del navegador.');
-        return;
-      }
-
-      setIsScanning(true);
+      console.log('Initializing barcode scanner...');
+      
       const codeReader = new BrowserMultiFormatReader();
       codeReaderRef.current = codeReader;
 
-      const videoInputDevices = await codeReader.listVideoInputDevices();
+      // Try to get available cameras
+      let videoInputDevices;
+      try {
+        videoInputDevices = await codeReader.listVideoInputDevices();
+        console.log('Available cameras:', videoInputDevices);
+      } catch (err) {
+        console.error('Error listing cameras:', err);
+        setError('No se pudo acceder a la lista de cámaras. Verifica los permisos.');
+        return;
+      }
       
       if (videoInputDevices.length === 0) {
         setError('No se encontró ninguna cámara en tu dispositivo');
-        setIsScanning(false);
         return;
       }
 
@@ -85,35 +52,56 @@ export default function BarcodeScanner({ onScan, onClose }) {
         device.label.toLowerCase().includes('environment')
       ) || videoInputDevices[0];
 
-      console.log('Using camera:', selectedDevice.label);
+      console.log('Selected camera:', selectedDevice.label, selectedDevice.deviceId);
 
-      const controls = await codeReader.decodeFromVideoDevice(
-        selectedDevice.deviceId,
-        videoRef.current,
-        (result, error) => {
-          if (result) {
-            const barcode = result.getText();
-            toast.success(`Código escaneado: ${barcode}`);
-            onScan(barcode);
-            stopScanning();
-            onClose();
-          }
-        }
-      );
+      // Start decoding
+      setIsScanning(true);
       
-      streamRef.current = controls;
+      try {
+        const controls = await codeReader.decodeFromVideoDevice(
+          selectedDevice.deviceId,
+          videoRef.current,
+          (result, error) => {
+            if (result) {
+              const barcode = result.getText();
+              console.log('Barcode detected:', barcode);
+              toast.success(`Código escaneado: ${barcode}`);
+              onScan(barcode);
+              stopScanning();
+              onClose();
+            }
+            // Ignore decode errors (they happen constantly while scanning)
+          }
+        );
+        
+        streamRef.current = controls;
+        console.log('Scanner started successfully');
+      } catch (decodeError) {
+        console.error('Decode error:', decodeError);
+        throw decodeError;
+      }
     } catch (error) {
       console.error('Error starting scanner:', error);
-      let errorMessage = 'Error al iniciar la cámara.';
+      console.error('Error details:', {
+        name: error.name,
+        message: error.message,
+        constraint: error.constraint
+      });
+      
+      let errorMessage = 'Error al iniciar la cámara: ' + error.message;
       
       if (error.name === 'NotAllowedError') {
-        errorMessage = 'Permiso de cámara denegado. Ve a la configuración del navegador y permite el acceso.';
+        errorMessage = 'Permiso de cámara denegado. Por favor, permite el acceso cuando el navegador lo solicite.';
       } else if (error.name === 'NotFoundError') {
         errorMessage = 'No se encontró ninguna cámara en el dispositivo.';
       } else if (error.name === 'NotReadableError') {
-        errorMessage = 'La cámara está siendo usada por otra aplicación.';
+        errorMessage = 'La cámara está siendo usada por otra aplicación. Cierra otras apps que puedan estar usando la cámara.';
       } else if (error.name === 'OverconstrainedError') {
-        errorMessage = 'No se pudo configurar la cámara con los ajustes solicitados.';
+        errorMessage = 'No se pudo configurar la cámara. Intenta cerrar otras apps que usen la cámara.';
+      } else if (error.name === 'TypeError') {
+        errorMessage = 'Error técnico al iniciar la cámara. Intenta recargar la página.';
+      } else if (error.message && error.message.includes('Permission')) {
+        errorMessage = 'No se tienen permisos para acceder a la cámara. Verifica la configuración del navegador.';
       }
       
       setError(errorMessage);
