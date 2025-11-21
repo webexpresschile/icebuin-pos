@@ -319,11 +319,11 @@ export default function Products() {
             </div>
           ) : products.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-green-600">No hay productos registrados</p>
+              <p className="text-sm md:text-base text-green-600">No hay productos registrados</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full min-w-[640px]">
                 <thead className="bg-green-50 border-b border-green-100">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-green-700 uppercase tracking-wider">
