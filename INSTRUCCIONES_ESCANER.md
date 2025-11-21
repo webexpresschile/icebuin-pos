@@ -2,14 +2,31 @@
 
 ## 📱 Escáner con Cámara del Celular
 
+### ⚠️ IMPORTANTE - Permisos de Cámara
+
+**El navegador SIEMPRE solicitará permiso para usar la cámara por razones de seguridad. Esto es normal y obligatorio.**
+
+No es posible saltarse esta solicitud. Debes:
+1. Permitir el acceso cuando el navegador lo solicite
+2. Si denegaste el permiso por error, sigue la guía en `/app/GUIA_PERMISOS_CAMARA.md`
+
 ### Configuración Inicial
 
-1. **Permitir Acceso a la Cámara:**
-   - La primera vez que uses el escáner, el navegador te pedirá permiso para acceder a la cámara
-   - Selecciona "Permitir" o "Allow"
-   - Si accidentalmente denegaste el permiso:
-     - **Android Chrome:** Ve a Configuración → Permisos del sitio → Cámara → Permite acceso
-     - **iOS Safari:** Ve a Ajustes → Safari → Cámara → Permite acceso para el sitio
+1. **Primera vez - Permitir Acceso a la Cámara:**
+   - Al hacer clic en el botón de cámara (📷), el navegador mostrará un popup
+   - Selecciona **"Permitir"** o **"Allow"**
+   - La aplicación verificará el acceso automáticamente
+
+2. **Si aparece un mensaje de error:**
+   - Lee el mensaje completo - te dirá exactamente qué hacer
+   - El mensaje incluye instrucciones específicas para tu navegador
+   - Haz clic en **"Intentar de Nuevo"** después de permitir el acceso
+   
+3. **Si accidentalmente denegaste el permiso:**
+   - Consulta la guía completa en: `/app/GUIA_PERMISOS_CAMARA.md`
+   - Resumen rápido:
+     - **Android Chrome:** Toca el candado → Permisos → Cámara → Permitir
+     - **iOS Safari:** Ajustes → Safari → Cámara → Permitir
 
 ### Cómo Usar
 
