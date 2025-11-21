@@ -69,10 +69,10 @@ export default function Reports() {
   };
 
   return (
-    <div className="space-y-6" data-testid="reports-page">
+    <div className="space-y-4 md:space-y-6" data-testid="reports-page">
       <div>
-        <h1 className="text-3xl font-bold text-green-800 mb-2">Reportes</h1>
-        <p className="text-green-600">Análisis de ventas y promociones</p>
+        <h1 className="text-2xl md:text-3xl font-bold text-green-800 mb-2">Reportes</h1>
+        <p className="text-sm md:text-base text-green-600">Análisis de ventas y promociones</p>
       </div>
 
       <Card data-testid="date-selector">
