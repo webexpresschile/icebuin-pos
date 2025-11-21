@@ -184,29 +184,29 @@ export default function Reports() {
 
           <Card data-testid="top-products">
             <CardHeader>
-              <CardTitle>Top 10 Productos Más Vendidos</CardTitle>
+              <CardTitle className="text-base md:text-lg">Top 10 Productos Más Vendidos</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
+              <div className="space-y-2 md:space-y-3">
                 {report.top_products.map((product, index) => (
                   <div
                     key={index}
-                    className="flex justify-between items-center p-4 bg-green-50 rounded-lg border border-green-100"
+                    className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-3 p-3 md:p-4 bg-green-50 rounded-lg border border-green-100"
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-bold">
+                    <div className="flex items-center gap-2 md:gap-3 flex-1">
+                      <div className="w-7 h-7 md:w-8 md:h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-bold text-sm md:text-base shrink-0">
                         {index + 1}
                       </div>
                       <div>
-                        <p className="font-medium text-green-900">{product.product_name}</p>
-                        <p className="text-sm text-green-600">
-                          {product.promotion_count} ventas con promoción · {product.regular_count} ventas regulares
+                        <p className="font-medium text-green-900 text-sm md:text-base">{product.product_name}</p>
+                        <p className="text-xs md:text-sm text-green-600">
+                          {product.promotion_count} promo · {product.regular_count} regular
                         </p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-lg font-bold text-green-800">{product.quantity} unidades</p>
-                      <p className="text-sm text-green-600">{formatCurrency(product.revenue)}</p>
+                    <div className="text-left sm:text-right ml-9 sm:ml-0">
+                      <p className="text-base md:text-lg font-bold text-green-800">{product.quantity} uds</p>
+                      <p className="text-xs md:text-sm text-green-600">{formatCurrency(product.revenue)}</p>
                     </div>
                   </div>
                 ))}
