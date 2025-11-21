@@ -88,21 +88,21 @@ export default function Dashboard() {
       {stats?.low_stock_products && stats.low_stock_products.length > 0 && (
         <Card className="border-orange-100" data-testid="low-stock-list">
           <CardHeader>
-            <CardTitle className="text-green-800">Productos con Stock Bajo</CardTitle>
+            <CardTitle className="text-base md:text-lg text-green-800">Productos con Stock Bajo</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
+            <div className="space-y-2 md:space-y-3">
               {stats.low_stock_products.map((product) => (
                 <div
                   key={product.id}
-                  className="flex justify-between items-center p-3 bg-orange-50 rounded-lg border border-orange-100"
+                  className="flex justify-between items-center p-2 md:p-3 bg-orange-50 rounded-lg border border-orange-100"
                 >
                   <div>
-                    <p className="font-medium text-orange-900">{product.name}</p>
-                    <p className="text-sm text-orange-600">SKU: {product.sku}</p>
+                    <p className="font-medium text-orange-900 text-sm md:text-base">{product.name}</p>
+                    <p className="text-xs md:text-sm text-orange-600">SKU: {product.sku}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-lg font-bold text-orange-800">{product.stock}</p>
+                    <p className="text-base md:text-lg font-bold text-orange-800">{product.stock}</p>
                     <p className="text-xs text-orange-600">Mín: {product.min_stock}</p>
                   </div>
                 </div>
