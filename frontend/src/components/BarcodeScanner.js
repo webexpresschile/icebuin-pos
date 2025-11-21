@@ -168,44 +168,74 @@ export default function BarcodeScanner({ onScan, onClose }) {
               </Button>
             </div>
 
-            <div className="relative bg-black rounded-lg overflow-hidden" style={{ aspectRatio: '16/9' }}>
-              <video
-                ref={videoRef}
-                className="w-full h-full object-cover"
-                playsInline
-                autoPlay
-                muted
-                data-testid="scanner-video"
-              />
-              {!isScanning && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-70 gap-3 p-4">
-                  <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-green-400"></div>
-                  <p className="text-white text-center text-sm">Iniciando cámara...</p>
-                  <p className="text-gray-300 text-center text-xs">Si se solicita, permite el acceso a la cámara</p>
-                </div>
-              )}
-              {isScanning && (
-                <div className="absolute inset-0 pointer-events-none">
-                  <div className="absolute inset-0 border-2 border-green-500 m-8 rounded-lg">
-                    <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-green-400 rounded-tl-lg"></div>
-                    <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-green-400 rounded-tr-lg"></div>
-                    <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-green-400 rounded-bl-lg"></div>
-                    <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-green-400 rounded-br-lg"></div>
-                  </div>
-                  <div className="absolute bottom-4 left-0 right-0 text-center">
-                    <p className="text-white text-sm font-medium bg-black bg-opacity-50 inline-block px-4 py-2 rounded-full">
-                      Apunta al código de barras
-                    </p>
+            {error ? (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-red-800 mb-2">{error}</p>
+                    <div className="text-xs text-red-700 space-y-1">
+                      <p className="font-medium">Para permitir el acceso a la cámara:</p>
+                      <p>📱 <strong>Chrome Android:</strong> Toca el candado → Permisos → Cámara → Permitir</p>
+                      <p>🍎 <strong>Safari iOS:</strong> Ajustes → Safari → Cámara → Permitir</p>
+                      <p>💻 <strong>Chrome Desktop:</strong> Clic en el candado → Configuración del sitio → Cámara → Permitir</p>
+                    </div>
+                    <Button 
+                      onClick={startScanning} 
+                      className="mt-3 w-full btn-primary"
+                      data-testid="retry-camera-button"
+                    >
+                      Intentar de Nuevo
+                    </Button>
                   </div>
                 </div>
-              )}
-            </div>
+              </div>
+            ) : (
+              <>
+                <div className="relative bg-black rounded-lg overflow-hidden" style={{ aspectRatio: '16/9' }}>
+                  <video
+                    ref={videoRef}
+                    className="w-full h-full object-cover"
+                    playsInline
+                    autoPlay
+                    muted
+                    data-testid="scanner-video"
+                  />
+                  {!isScanning && (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-70 gap-3 p-4">
+                      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-green-400"></div>
+                      <p className="text-white text-center text-sm font-medium">Solicitando acceso a la cámara...</p>
+                      <p className="text-gray-300 text-center text-xs">
+                        Toca "Permitir" cuando tu navegador lo solicite
+                      </p>
+                    </div>
+                  )}
+                  {isScanning && (
+                    <div className="absolute inset-0 pointer-events-none">
+                      <div className="absolute inset-0 border-2 border-green-500 m-8 rounded-lg">
+                        <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-green-400 rounded-tl-lg"></div>
+                        <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-green-400 rounded-tr-lg"></div>
+                        <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-green-400 rounded-bl-lg"></div>
+                        <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-green-400 rounded-br-lg"></div>
+                      </div>
+                      <div className="absolute bottom-4 left-0 right-0 text-center">
+                        <p className="text-white text-sm font-medium bg-black bg-opacity-50 inline-block px-4 py-2 rounded-full">
+                          Apunta al código de barras
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
 
-            <div className="text-xs text-center text-green-600 space-y-1">
-              <p className="font-medium">💡 Consejos:</p>
-              <p>• Mantén el código de barras dentro del marco verde</p>
-              <p>• Asegúrate de tener buena iluminación</p>
-            </div>
+                {!error && (
+                  <div className="text-xs text-center text-green-600 space-y-1">
+                    <p className="font-medium">💡 Consejos:</p>
+                    <p>• Mantén el código de barras dentro del marco verde</p>
+                    <p>• Asegúrate de tener buena iluminación</p>
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </CardContent>
       </Card>
