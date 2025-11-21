@@ -29,10 +29,10 @@ export default function BarcodeScanner({ onScan, onClose }) {
       const codeReader = new BrowserMultiFormatReader();
       codeReaderRef.current = codeReader;
 
-      // Try to get available cameras
+      // Get available cameras using the correct API
       let videoInputDevices;
       try {
-        videoInputDevices = await codeReader.listVideoInputDevices();
+        videoInputDevices = await BrowserCodeReader.listVideoInputDevices();
         console.log('Available cameras:', videoInputDevices);
       } catch (err) {
         console.error('Error listing cameras:', err);
