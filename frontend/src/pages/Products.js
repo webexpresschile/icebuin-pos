@@ -144,15 +144,15 @@ export default function Products() {
   };
 
   return (
-    <div className="space-y-6" data-testid="products-page">
-      <div className="flex justify-between items-center">
+    <div className="space-y-4 md:space-y-6" data-testid="products-page">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h1 className="text-3xl font-bold text-green-800 mb-2">Inventario</h1>
-          <p className="text-green-600">Gestión de productos y precios</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-green-800 mb-2">Inventario</h1>
+          <p className="text-sm md:text-base text-green-600">Gestión de productos y precios</p>
         </div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="btn-primary" data-testid="add-product-button">
+            <Button className="btn-primary w-full sm:w-auto" data-testid="add-product-button">
               <Plus className="w-4 h-4 mr-2" />
               Nuevo Producto
             </Button>
