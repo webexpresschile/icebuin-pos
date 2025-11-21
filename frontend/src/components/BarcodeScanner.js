@@ -8,24 +8,15 @@ import { toast } from 'sonner';
 export default function BarcodeScanner({ onScan, onClose }) {
   const videoRef = useRef(null);
   const [isScanning, setIsScanning] = useState(false);
-  const [codeReader, setCodeReader] = useState(null);
-
-  useEffect(() => {
-    const reader = new BrowserMultiFormatReader();
-    setCodeReader(reader);
-
-    return () => {
-      if (reader) {
-        reader.reset();
-      }
-    };
-  }, []);
+  const codeReaderRef = useRef(null);
+  const streamRef = useRef(null);
 
   const startScanning = async () => {
-    if (!codeReader) return;
-
     try {
       setIsScanning(true);
+      const codeReader = new BrowserMultiFormatReader();
+      codeReaderRef.current = codeReader;
+
       const videoInputDevices = await codeReader.listVideoInputDevices();
       
       if (videoInputDevices.length === 0) {
@@ -40,7 +31,7 @@ export default function BarcodeScanner({ onScan, onClose }) {
         device.label.toLowerCase().includes('trasera')
       ) || videoInputDevices[0];
 
-      await codeReader.decodeFromVideoDevice(
+      const controls = await codeReader.decodeFromVideoDevice(
         selectedDevice.deviceId,
         videoRef.current,
         (result, error) => {
@@ -52,6 +43,8 @@ export default function BarcodeScanner({ onScan, onClose }) {
           }
         }
       );
+      
+      streamRef.current = controls;
     } catch (error) {
       console.error('Error starting scanner:', error);
       toast.error('Error al iniciar la cámara. Verifica los permisos.');
@@ -60,8 +53,21 @@ export default function BarcodeScanner({ onScan, onClose }) {
   };
 
   const stopScanning = () => {
-    if (codeReader) {
-      codeReader.reset();
+    try {
+      // Stop the video stream
+      if (streamRef.current) {
+        streamRef.current.stop();
+        streamRef.current = null;
+      }
+      
+      // Stop video element
+      if (videoRef.current && videoRef.current.srcObject) {
+        const tracks = videoRef.current.srcObject.getTracks();
+        tracks.forEach(track => track.stop());
+        videoRef.current.srcObject = null;
+      }
+    } catch (error) {
+      console.error('Error stopping scanner:', error);
     }
     setIsScanning(false);
   };
@@ -73,7 +79,9 @@ export default function BarcodeScanner({ onScan, onClose }) {
 
   useEffect(() => {
     startScanning();
-    return () => stopScanning();
+    return () => {
+      stopScanning();
+    };
   }, []);
 
   return (
