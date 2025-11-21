@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { BrowserMultiFormatReader } from '@zxing/browser';
+import { BrowserCodeReader } from '@zxing/browser';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Camera, X, AlertCircle } from 'lucide-react';
