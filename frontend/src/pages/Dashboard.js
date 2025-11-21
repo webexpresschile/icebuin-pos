@@ -37,13 +37,13 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="space-y-6" data-testid="dashboard">
+    <div className="space-y-4 md:space-y-6" data-testid="dashboard">
       <div>
-        <h1 className="text-3xl font-bold text-green-800 mb-2">Panel de Control</h1>
-        <p className="text-green-600">Resumen de operaciones del día</p>
+        <h1 className="text-2xl md:text-3xl font-bold text-green-800 mb-2">Panel de Control</h1>
+        <p className="text-sm md:text-base text-green-600">Resumen de operaciones del día</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
         <Card className="stat-card border-green-100" data-testid="revenue-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-green-700">Ingresos Hoy</CardTitle>
