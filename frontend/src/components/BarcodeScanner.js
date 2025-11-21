@@ -22,13 +22,16 @@ export default function BarcodeScanner({ onScan, onClose }) {
       if (videoInputDevices.length === 0) {
         toast.error('No se encontró ninguna cámara');
         setIsScanning(false);
+        onClose();
         return;
       }
 
       // Prefer back camera on mobile
       const selectedDevice = videoInputDevices.find(device => 
         device.label.toLowerCase().includes('back') || 
-        device.label.toLowerCase().includes('trasera')
+        device.label.toLowerCase().includes('trasera') ||
+        device.label.toLowerCase().includes('rear') ||
+        device.label.toLowerCase().includes('environment')
       ) || videoInputDevices[0];
 
       const controls = await codeReader.decodeFromVideoDevice(
@@ -40,6 +43,7 @@ export default function BarcodeScanner({ onScan, onClose }) {
             toast.success(`Código escaneado: ${barcode}`);
             onScan(barcode);
             stopScanning();
+            onClose();
           }
         }
       );
@@ -47,8 +51,15 @@ export default function BarcodeScanner({ onScan, onClose }) {
       streamRef.current = controls;
     } catch (error) {
       console.error('Error starting scanner:', error);
-      toast.error('Error al iniciar la cámara. Verifica los permisos.');
+      const errorMessage = error.name === 'NotAllowedError' 
+        ? 'Permiso de cámara denegado. Por favor permite el acceso a la cámara.' 
+        : error.name === 'NotFoundError'
+        ? 'No se encontró ninguna cámara en el dispositivo.'
+        : 'Error al iniciar la cámara. Verifica los permisos.';
+      
+      toast.error(errorMessage);
       setIsScanning(false);
+      setTimeout(() => onClose(), 2000);
     }
   };
 
