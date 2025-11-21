@@ -2,17 +2,69 @@ import React, { useEffect, useRef, useState } from 'react';
 import { BrowserMultiFormatReader } from '@zxing/browser';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Camera, X } from 'lucide-react';
+import { Camera, X, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function BarcodeScanner({ onScan, onClose }) {
   const videoRef = useRef(null);
   const [isScanning, setIsScanning] = useState(false);
+  const [error, setError] = useState(null);
   const codeReaderRef = useRef(null);
   const streamRef = useRef(null);
 
+  const checkCameraPermissions = async () => {
+    try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Tu navegador no soporta acceso a la cámara');
+      }
+      return true;
+    } catch (err) {
+      return false;
+    }
+  };
+
+  const requestCameraAccess = async () => {
+    try {
+      // Request camera access with specific constraints for mobile
+      const constraints = {
+        video: {
+          facingMode: { ideal: 'environment' }, // Back camera on mobile
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }
+      };
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      
+      // Stop the stream immediately (we just wanted permission)
+      stream.getTracks().forEach(track => track.stop());
+      
+      return true;
+    } catch (err) {
+      console.error('Camera access error:', err);
+      return false;
+    }
+  };
+
   const startScanning = async () => {
     try {
+      setIsScanning(false);
+      setError(null);
+
+      // Check if camera is supported
+      const supported = await checkCameraPermissions();
+      if (!supported) {
+        setError('Tu navegador no soporta acceso a la cámara. Prueba con Chrome o Safari.');
+        return;
+      }
+
+      // Request camera access first
+      const hasAccess = await requestCameraAccess();
+      if (!hasAccess) {
+        setError('No se pudo acceder a la cámara. Verifica los permisos en la configuración del navegador.');
+        return;
+      }
+
       setIsScanning(true);
       const codeReader = new BrowserMultiFormatReader();
       codeReaderRef.current = codeReader;
@@ -20,9 +72,8 @@ export default function BarcodeScanner({ onScan, onClose }) {
       const videoInputDevices = await codeReader.listVideoInputDevices();
       
       if (videoInputDevices.length === 0) {
-        toast.error('No se encontró ninguna cámara');
+        setError('No se encontró ninguna cámara en tu dispositivo');
         setIsScanning(false);
-        onClose();
         return;
       }
 
@@ -33,6 +84,8 @@ export default function BarcodeScanner({ onScan, onClose }) {
         device.label.toLowerCase().includes('rear') ||
         device.label.toLowerCase().includes('environment')
       ) || videoInputDevices[0];
+
+      console.log('Using camera:', selectedDevice.label);
 
       const controls = await codeReader.decodeFromVideoDevice(
         selectedDevice.deviceId,
@@ -51,15 +104,20 @@ export default function BarcodeScanner({ onScan, onClose }) {
       streamRef.current = controls;
     } catch (error) {
       console.error('Error starting scanner:', error);
-      const errorMessage = error.name === 'NotAllowedError' 
-        ? 'Permiso de cámara denegado. Por favor permite el acceso a la cámara.' 
-        : error.name === 'NotFoundError'
-        ? 'No se encontró ninguna cámara en el dispositivo.'
-        : 'Error al iniciar la cámara. Verifica los permisos.';
+      let errorMessage = 'Error al iniciar la cámara.';
       
-      toast.error(errorMessage);
+      if (error.name === 'NotAllowedError') {
+        errorMessage = 'Permiso de cámara denegado. Ve a la configuración del navegador y permite el acceso.';
+      } else if (error.name === 'NotFoundError') {
+        errorMessage = 'No se encontró ninguna cámara en el dispositivo.';
+      } else if (error.name === 'NotReadableError') {
+        errorMessage = 'La cámara está siendo usada por otra aplicación.';
+      } else if (error.name === 'OverconstrainedError') {
+        errorMessage = 'No se pudo configurar la cámara con los ajustes solicitados.';
+      }
+      
+      setError(errorMessage);
       setIsScanning(false);
-      setTimeout(() => onClose(), 2000);
     }
   };
 
