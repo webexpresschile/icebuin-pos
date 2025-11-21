@@ -136,21 +136,21 @@ export default function Reports() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6" data-testid="report-summary">
             <Card className="stat-card border-green-100">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-green-700">Total Ventas</CardTitle>
-                <TrendingUp className="h-5 w-5 text-green-600" />
+                <CardTitle className="text-xs md:text-sm font-medium text-green-700">Total Ventas</CardTitle>
+                <TrendingUp className="h-4 w-4 md:h-5 md:w-5 text-green-600" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-green-800" data-testid="total-sales">{report.summary.total_sales}</div>
+                <div className="text-lg md:text-2xl font-bold text-green-800" data-testid="total-sales">{report.summary.total_sales}</div>
               </CardContent>
             </Card>
 
             <Card className="stat-card border-green-100">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-green-700">Ingresos Totales</CardTitle>
-                <DollarSign className="h-5 w-5 text-green-600" />
+                <CardTitle className="text-xs md:text-sm font-medium text-green-700">Ingresos</CardTitle>
+                <DollarSign className="h-4 w-4 md:h-5 md:w-5 text-green-600" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-green-800" data-testid="total-revenue">
+                <div className="text-base md:text-2xl font-bold text-green-800" data-testid="total-revenue">
                   {formatCurrency(report.summary.total_revenue)}
                 </div>
               </CardContent>
@@ -158,11 +158,11 @@ export default function Reports() {
 
             <Card className="stat-card border-green-100">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-green-700">Ahorros Clientes</CardTitle>
-                <Tag className="h-5 w-5 text-green-600" />
+                <CardTitle className="text-xs md:text-sm font-medium text-green-700">Ahorros</CardTitle>
+                <Tag className="h-4 w-4 md:h-5 md:w-5 text-green-600" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-green-800" data-testid="total-savings">
+                <div className="text-base md:text-2xl font-bold text-green-800" data-testid="total-savings">
                   {formatCurrency(report.summary.total_savings)}
                 </div>
               </CardContent>
@@ -170,11 +170,11 @@ export default function Reports() {
 
             <Card className="stat-card border-green-100">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-green-700">Ventas con Promo</CardTitle>
-                <Package className="h-5 w-5 text-green-600" />
+                <CardTitle className="text-xs md:text-sm font-medium text-green-700">Con Promo</CardTitle>
+                <Package className="h-4 w-4 md:h-5 md:w-5 text-green-600" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-green-800" data-testid="promotion-sales">
+                <div className="text-lg md:text-2xl font-bold text-green-800" data-testid="promotion-sales">
                   {report.summary.promotion_sales}
                 </div>
                 <p className="text-xs text-green-600 mt-1">Regular: {report.summary.regular_sales}</p>
