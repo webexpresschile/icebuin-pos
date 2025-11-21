@@ -115,11 +115,15 @@ export default function BarcodeScanner({ onScan, onClose }) {
                 ref={videoRef}
                 className="w-full h-full object-cover"
                 playsInline
+                autoPlay
+                muted
                 data-testid="scanner-video"
               />
               {!isScanning && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                  <p className="text-white">Iniciando cámara...</p>
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-70 gap-3 p-4">
+                  <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-green-400"></div>
+                  <p className="text-white text-center text-sm">Iniciando cámara...</p>
+                  <p className="text-gray-300 text-center text-xs">Si se solicita, permite el acceso a la cámara</p>
                 </div>
               )}
               {isScanning && (
@@ -130,13 +134,20 @@ export default function BarcodeScanner({ onScan, onClose }) {
                     <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-green-400 rounded-bl-lg"></div>
                     <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-green-400 rounded-br-lg"></div>
                   </div>
+                  <div className="absolute bottom-4 left-0 right-0 text-center">
+                    <p className="text-white text-sm font-medium bg-black bg-opacity-50 inline-block px-4 py-2 rounded-full">
+                      Apunta al código de barras
+                    </p>
+                  </div>
                 </div>
               )}
             </div>
 
-            <p className="text-sm text-center text-green-600">
-              Apunta la cámara al código de barras
-            </p>
+            <div className="text-xs text-center text-green-600 space-y-1">
+              <p className="font-medium">💡 Consejos:</p>
+              <p>• Mantén el código de barras dentro del marco verde</p>
+              <p>• Asegúrate de tener buena iluminación</p>
+            </div>
           </div>
         </CardContent>
       </Card>
