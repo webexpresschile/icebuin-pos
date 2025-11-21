@@ -80,14 +80,14 @@ export default function Reports() {
           <CardTitle>Seleccionar Rango de Fechas</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-wrap gap-4 items-end">
-            <div>
-              <Label>Fecha Inicio</Label>
+          <div className="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-4 items-stretch sm:items-end">
+            <div className="flex-1 min-w-[200px]">
+              <Label className="text-sm">Fecha Inicio</Label>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="w-[200px] justify-start" data-testid="start-date-button">
+                  <Button variant="outline" className="w-full justify-start mt-1" data-testid="start-date-button">
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {format(startDate, 'PPP', { locale: es })}
+                    <span className="text-sm">{format(startDate, 'PPP', { locale: es })}</span>
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
@@ -96,13 +96,13 @@ export default function Reports() {
               </Popover>
             </div>
 
-            <div>
-              <Label>Fecha Fin</Label>
+            <div className="flex-1 min-w-[200px]">
+              <Label className="text-sm">Fecha Fin</Label>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="w-[200px] justify-start" data-testid="end-date-button">
+                  <Button variant="outline" className="w-full justify-start mt-1" data-testid="end-date-button">
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {format(endDate, 'PPP', { locale: es })}
+                    <span className="text-sm">{format(endDate, 'PPP', { locale: es })}</span>
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
@@ -111,7 +111,7 @@ export default function Reports() {
               </Popover>
             </div>
 
-            <Button onClick={fetchReport} disabled={loading} className="btn-primary" data-testid="generate-report-button">
+            <Button onClick={fetchReport} disabled={loading} className="btn-primary w-full sm:w-auto" data-testid="generate-report-button">
               {loading ? 'Generando...' : 'Generar Reporte'}
             </Button>
 
@@ -120,7 +120,7 @@ export default function Reports() {
                 onClick={exportToExcel}
                 disabled={exporting}
                 variant="outline"
-                className="border-green-500 text-green-700 hover:bg-green-50"
+                className="border-green-500 text-green-700 hover:bg-green-50 w-full sm:w-auto"
                 data-testid="export-excel-button"
               >
                 <FileDown className="w-4 h-4 mr-2" />
