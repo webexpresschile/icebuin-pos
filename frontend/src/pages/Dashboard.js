@@ -46,41 +46,41 @@ export default function Dashboard() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
         <Card className="stat-card border-green-100" data-testid="revenue-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-green-700">Ingresos Hoy</CardTitle>
-            <DollarSign className="h-5 w-5 text-green-600" />
+            <CardTitle className="text-xs md:text-sm font-medium text-green-700">Ingresos Hoy</CardTitle>
+            <DollarSign className="h-4 w-4 md:h-5 md:w-5 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-800">{formatCurrency(stats?.today_revenue || 0)}</div>
+            <div className="text-lg md:text-2xl font-bold text-green-800">{formatCurrency(stats?.today_revenue || 0)}</div>
           </CardContent>
         </Card>
 
         <Card className="stat-card border-green-100" data-testid="sales-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-green-700">Ventas Hoy</CardTitle>
-            <ShoppingCart className="h-5 w-5 text-green-600" />
+            <CardTitle className="text-xs md:text-sm font-medium text-green-700">Ventas Hoy</CardTitle>
+            <ShoppingCart className="h-4 w-4 md:h-5 md:w-5 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-800">{stats?.today_sales_count || 0}</div>
+            <div className="text-lg md:text-2xl font-bold text-green-800">{stats?.today_sales_count || 0}</div>
           </CardContent>
         </Card>
 
         <Card className="stat-card border-green-100" data-testid="products-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-green-700">Total Productos</CardTitle>
-            <Package className="h-5 w-5 text-green-600" />
+            <CardTitle className="text-xs md:text-sm font-medium text-green-700">Total Productos</CardTitle>
+            <Package className="h-4 w-4 md:h-5 md:w-5 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-800">{stats?.total_products || 0}</div>
+            <div className="text-lg md:text-2xl font-bold text-green-800">{stats?.total_products || 0}</div>
           </CardContent>
         </Card>
 
         <Card className="stat-card border-orange-100" data-testid="low-stock-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-orange-700">Stock Bajo</CardTitle>
-            <AlertTriangle className="h-5 w-5 text-orange-600" />
+            <CardTitle className="text-xs md:text-sm font-medium text-orange-700">Stock Bajo</CardTitle>
+            <AlertTriangle className="h-4 w-4 md:h-5 md:w-5 text-orange-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-800">{stats?.low_stock_count || 0}</div>
+            <div className="text-lg md:text-2xl font-bold text-orange-800">{stats?.low_stock_count || 0}</div>
           </CardContent>
         </Card>
       </div>
