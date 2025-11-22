@@ -93,32 +93,80 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      {stats?.low_stock_products && stats.low_stock_products.length > 0 && (
-        <Card className="border-orange-100" data-testid="low-stock-list">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+        {stats?.low_stock_products && stats.low_stock_products.length > 0 && (
+          <Card className="border-orange-100" data-testid="low-stock-list">
+            <CardHeader>
+              <CardTitle className="text-base md:text-lg text-green-800">Productos con Stock Bajo</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2 md:space-y-3">
+                {stats.low_stock_products.map((product) => (
+                  <div
+                    key={product.id}
+                    className="flex justify-between items-center p-2 md:p-3 bg-orange-50 rounded-lg border border-orange-100"
+                  >
+                    <div>
+                      <p className="font-medium text-orange-900 text-sm md:text-base">{product.name}</p>
+                      <p className="text-xs md:text-sm text-orange-600">SKU: {product.sku}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-base md:text-lg font-bold text-orange-800">{product.stock}</p>
+                      <p className="text-xs text-orange-600">Mín: {product.min_stock}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        <Card className="border-green-100" data-testid="recent-sales-list">
           <CardHeader>
-            <CardTitle className="text-base md:text-lg text-green-800">Productos con Stock Bajo</CardTitle>
+            <CardTitle className="text-base md:text-lg text-green-800 flex items-center gap-2">
+              <Clock className="w-5 h-5" />
+              Ventas Recientes
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2 md:space-y-3">
-              {stats.low_stock_products.map((product) => (
-                <div
-                  key={product.id}
-                  className="flex justify-between items-center p-2 md:p-3 bg-orange-50 rounded-lg border border-orange-100"
-                >
-                  <div>
-                    <p className="font-medium text-orange-900 text-sm md:text-base">{product.name}</p>
-                    <p className="text-xs md:text-sm text-orange-600">SKU: {product.sku}</p>
+            {recentSales.length === 0 ? (
+              <p className="text-center text-green-500 py-4 text-sm">No hay ventas registradas</p>
+            ) : (
+              <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                {recentSales.map((sale) => (
+                  <div
+                    key={sale.id}
+                    className="p-3 bg-green-50 rounded-lg border border-green-100 hover:bg-green-100 transition-colors"
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="flex-1">
+                        <p className="text-xs text-green-600">
+                          {format(new Date(sale.created_at), 'PPp', { locale: es })}
+                        </p>
+                        <p className="text-sm font-medium text-green-900">{sale.seller_name}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-base font-bold text-green-800">{formatCurrency(sale.total_amount)}</p>
+                        {sale.total_savings > 0 && (
+                          <p className="text-xs text-green-600">Ahorro: {formatCurrency(sale.total_savings)}</p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      {sale.items.map((item, idx) => (
+                        <div key={idx} className="flex justify-between text-xs text-green-700">
+                          <span>{item.quantity}x {item.product_name}</span>
+                          <span>{formatCurrency(item.total_price)}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-base md:text-lg font-bold text-orange-800">{product.stock}</p>
-                    <p className="text-xs text-orange-600">Mín: {product.min_stock}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
-      )}
+      </div>
     </div>
   );
 }
