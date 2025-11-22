@@ -2,23 +2,31 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { API } from '@/App';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { DollarSign, ShoppingCart, Package, AlertTriangle } from 'lucide-react';
+import { DollarSign, ShoppingCart, Package, AlertTriangle, Clock } from 'lucide-react';
 import { toast } from 'sonner';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 export default function Dashboard() {
   const [stats, setStats] = useState(null);
+  const [recentSales, setRecentSales] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchStats();
+    fetchData();
   }, []);
 
-  const fetchStats = async () => {
+  const fetchData = async () => {
     try {
-      const response = await axios.get(`${API}/reports/dashboard`);
-      setStats(response.data);
+      const [statsResponse, salesResponse] = await Promise.all([
+        axios.get(`${API}/reports/dashboard`),
+        axios.get(`${API}/sales/recent?limit=10`)
+      ]);
+      setStats(statsResponse.data);
+      setRecentSales(salesResponse.data);
     } catch (error) {
       toast.error('Error al cargar estadísticas');
+      console.error('Dashboard error:', error);
     } finally {
       setLoading(false);
     }
