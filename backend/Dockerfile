@@ -13,8 +13,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy app
 COPY server.py .
-COPY .env ./
 
 EXPOSE 8000
 
+# Pass env vars at runtime via docker run -e
 CMD ["uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8000"]
