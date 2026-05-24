@@ -103,3 +103,16 @@ credentials.json
 *.pem
 *.key
 .credentials
+
+# IceBuinPOS - Docker & Env
+.env
+backend/.env
+frontend/.env
+
+# Emergent (removed)
+.emergent/
+
+# Build artifacts
+frontend/build/
+backend/__pycache__/
+*.pyc

@@ -1,0 +1,61 @@
+version: "3.8"
+
+services:
+  mongodb:
+    image: mongo:7
+    container_name: icebuin-mongodb
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: icebuin
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-changeme}
+      MONGO_INITDB_DATABASE: icebuinpos
+    networks:
+      - icebuin-net
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    container_name: icebuin-backend
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      MONGO_URL: ${MONGO_URL}
+      DB_NAME: ${DB_NAME:-icebuinpos}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      CORS_ORIGINS: ${CORS_ORIGINS}
+    networks:
+      - icebuin-net
+      - easypanel
+    healthcheck:
+      test: curl -f http://localhost:8000/ || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  frontend:
+    build: ./frontend
+    container_name: icebuin-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    networks:
+      - icebuin-net
+      - easypanel
+
+volumes:
+  mongo-data:
+
+networks:
+  icebuin-net:
+    driver: bridge
+  easypanel:
+    external: true
+    name: easypanel
